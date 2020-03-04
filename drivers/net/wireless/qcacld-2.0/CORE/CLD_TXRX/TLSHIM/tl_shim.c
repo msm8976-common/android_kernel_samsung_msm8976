@@ -500,7 +500,7 @@ static bool tlshim_is_pkt_drop_candidate(tp_wma_handle wma_handle,
 
 	peer = ol_txrx_find_peer_by_addr(pdev_ctx, peer_addr, &peer_id);
 	if (!peer) {
-		if (SIR_MAC_MGMT_ASSOC_REQ != subtype) {
+		if (IEEE80211_FC0_SUBTYPE_ASSOC_REQ != subtype) {
 			TLSHIM_LOGE(FL("Received mgmt frame: %0x from unknow peer: %pM"),
 				subtype, peer_addr);
 			should_drop = TRUE;
@@ -509,37 +509,34 @@ static bool tlshim_is_pkt_drop_candidate(tp_wma_handle wma_handle,
 	}
 
 	switch (subtype) {
-	case SIR_MAC_MGMT_ASSOC_REQ:
-		if (peer->last_assoc_rcvd) {
-			if (adf_os_gettimestamp() - peer->last_assoc_rcvd <
-			    TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER) {
-				TLSHIM_LOGD(FL("Dropping Assoc Req received"));
-				should_drop = TRUE;
-			}
+	case IEEE80211_FC0_SUBTYPE_ASSOC_REQ:
+		if (peer->last_assoc_rcvd &&
+		    vos_system_time_after(peer->last_assoc_rcvd +
+					  TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER,
+					  adf_os_gettimestamp())) {
+			TLSHIM_LOGD(FL("Dropping Assoc Req as it is received after %d ms of last frame. Allow it only after %d ms"),
+				    (int) (adf_os_gettimestamp() -
+				    peer->last_assoc_rcvd),
+				    TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER);
+			should_drop = TRUE;
+			break;
 		}
 		peer->last_assoc_rcvd = adf_os_gettimestamp();
 		break;
-	case SIR_MAC_MGMT_DISASSOC:
-		if (peer->last_disassoc_rcvd) {
-			if (adf_os_gettimestamp() -
-			    peer->last_disassoc_rcvd <
-			    TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER) {
-				TLSHIM_LOGD(FL("Dropping DisAssoc received"));
-				should_drop = TRUE;
-			}
+	case IEEE80211_FC0_SUBTYPE_DISASSOC:
+	case IEEE80211_FC0_SUBTYPE_DEAUTH:
+		if (peer->last_disassoc_deauth_rcvd &&
+		    vos_system_time_after(peer->last_disassoc_deauth_rcvd +
+					  TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER,
+					  adf_os_gettimestamp())) {
+			TLSHIM_LOGD(FL("Dropping subtype %x frame as it is received after %d ms of last frame. Allow it only after %d ms"),
+				    subtype, (int) (adf_os_gettimestamp() -
+				    peer->last_disassoc_deauth_rcvd),
+				    TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER);
+			should_drop = TRUE;
+			break;
 		}
-		peer->last_disassoc_rcvd = adf_os_gettimestamp();
-		break;
-	case SIR_MAC_MGMT_DEAUTH:
-		if (peer->last_deauth_rcvd) {
-			if (adf_os_gettimestamp() -
-			    peer->last_deauth_rcvd <
-			    TLSHIM_MGMT_FRAME_DETECT_DOS_TIMER) {
-				TLSHIM_LOGD(FL("Dropping Deauth received"));
-				should_drop = TRUE;
-			}
-		}
-		peer->last_deauth_rcvd = adf_os_gettimestamp();
+		peer->last_disassoc_deauth_rcvd = adf_os_gettimestamp();
 		break;
 	default:
 		break;
