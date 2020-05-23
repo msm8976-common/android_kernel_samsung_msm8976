@@ -28,10 +28,8 @@
 #include <linux/timer.h>
 #include <linux/workqueue.h>
 #include <linux/kthread.h>
-#include <linux/mutex.h>
 #include <linux/earlysuspend.h>
 #include <linux/sched/rt.h>
-
 #include <asm/cputime.h>
 
 static atomic_t active_count = ATOMIC_INIT(0);
