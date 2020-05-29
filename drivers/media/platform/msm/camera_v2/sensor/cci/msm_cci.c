@@ -63,11 +63,10 @@ static int32_t msm_cci_set_clk_param(struct cci_device *cci_dev,
 			__func__, __LINE__, i2c_freq_mode);
 		return -EINVAL;
 	}
-
 	if (cci_dev->i2c_freq_mode[master] == i2c_freq_mode)
 		return 0;
-	
-	clk_params = &cci_dev->cci_clk_params[i2c_freq_mode];	
+
+	clk_params = &cci_dev->cci_clk_params[i2c_freq_mode];
 	if (MASTER_0 == master) {
 		msm_camera_io_w_mb(clk_params->hw_thigh << 16 |
 			clk_params->hw_tlow,
@@ -718,18 +717,18 @@ static int32_t msm_cci_i2c_read(struct v4l2_subdev *sd,
 	enum cci_i2c_queue_t queue = QUEUE_1;
 	struct cci_device *cci_dev = NULL;
 	struct msm_camera_cci_i2c_read_cfg *read_cfg = NULL;
-	
+
 	CDBG("%s line %d\n", __func__, __LINE__);
 	cci_dev = v4l2_get_subdevdata(sd);
 	master = c_ctrl->cci_info->cci_i2c_master;
 	read_cfg = &c_ctrl->cfg.cci_i2c_read_cfg;
-	
-	if (master >= MASTER_MAX || master < 0) {	
-		pr_err("%s:%d Invalid I2C master %d\n",	
-			__func__, __LINE__, master);	
-		return -EINVAL;	
-	}	
-		
+
+	if (master >= MASTER_MAX || master < 0) {
+		pr_err("%s:%d Invalid I2C master %d\n",
+			__func__, __LINE__, master);
+		return -EINVAL;
+	}
+
 	mutex_lock(&cci_dev->cci_master_info[master].mutex_q[queue]);
 
 	/* Set the I2C Frequency */
@@ -1444,7 +1443,7 @@ static int32_t msm_cci_write(struct v4l2_subdev *sd,
 			|| c_ctrl->cci_info->cci_i2c_master < 0) {
 		pr_err("%s:%d Invalid I2C master addr\n", __func__, __LINE__);
 		return -EINVAL;
-	}	
+	}
 	master = c_ctrl->cci_info->cci_i2c_master;
 	cci_master_info = &cci_dev->cci_master_info[master];
 
