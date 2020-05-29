@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013, 2016-2017 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -90,7 +90,7 @@ static ssize_t ath_procfs_diag_read(struct file *file, char __user *buf,
 	int rv;
 	A_UINT8 *read_buffer = NULL;
 
-	hif_hdl = get_hif_hdl_from_file(file);
+hif_hdl = get_hif_hdl_from_file(file);
 	if (hif_addr_in_boundary(hif_hdl, (A_UINT32)(*pos)))
 		return -EINVAL;
 
@@ -113,8 +113,10 @@ static ssize_t ath_procfs_diag_read(struct file *file, char __user *buf,
 					(A_UINT8 *)read_buffer, count);
 	}
 
-	if (rv)
+	if (rv) {
+		vos_mem_free(read_buffer);
 		return -EIO;
+	} 
 
 	if(copy_to_user(buf, read_buffer, count)) {
 		vos_mem_free(read_buffer);
@@ -132,7 +134,7 @@ static ssize_t ath_procfs_diag_write(struct file *file, const char __user *buf,
 	int rv;
 	A_UINT8 *write_buffer = NULL;
 
-	hif_hdl = get_hif_hdl_from_file(file);
+hif_hdl = get_hif_hdl_from_file(file);
 	if (hif_addr_in_boundary(hif_hdl, (A_UINT32)(*pos)))
 		return -EINVAL;
 	write_buffer = (A_UINT8 *)vos_mem_malloc(count);

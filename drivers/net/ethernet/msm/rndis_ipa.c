@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015, 2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -131,7 +131,6 @@ enum rndis_ipa_operation {
 #define RNDIS_IPA_STATE_DEBUG(ctx) \
 	RNDIS_IPA_DEBUG("Driver state: %s\n",\
 	rndis_ipa_state_string(ctx->state));
-
 
 /**
  * struct rndis_ipa_dev - main driver context parameters
