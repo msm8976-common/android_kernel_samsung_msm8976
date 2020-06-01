@@ -181,6 +181,12 @@ static struct usb_descriptor_header *hidg_fs_descriptors[] = {
 	NULL,
 };
 
+void free_ep_req(struct usb_ep *ep, struct usb_request *req)
+{
+	kfree(req->buf);
+	usb_ep_free_request(ep, req);
+}
+
 /*-------------------------------------------------------------------------*/
 /*                              Char Device                                */
 
@@ -226,7 +232,7 @@ static ssize_t f_hidg_read(struct file *file, char __user *buffer,
 				struct f_hidg_req_list, list);
 
 	/*
-	 * Remove this from list to protect it from beign free()
+	 * Remove this from list to protect it from being free()
 	 * while host disables our function
 	 */
 	list_del(&list->list);

@@ -3071,6 +3071,12 @@ int q6asm_open_shared_io(struct audio_client *ac,
 	u8 *channel_mapping;
 	int i, size_of_open, num_watermarks, bufsz, bufcnt, rc, flags = 0;
 
+	if (config->channels > PCM_FORMAT_MAX_NUM_CHANNEL) {
+		pr_err("%s: Invalid channel count %d\n", __func__,
+		       config->channels);
+		return -EINVAL;
+	}
+
 	if (!ac || !config)
 		return -EINVAL;
 

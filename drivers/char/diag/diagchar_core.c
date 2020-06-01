@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2018, 2019, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2008-2017, 2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -2496,6 +2496,16 @@ int silent_log_panic_handler(void)
 	return ret;
 }
 EXPORT_SYMBOL(silent_log_panic_handler);
+
+static int check_data_ready(int index)
+{
+	int data_type = 0;
+
+	mutex_lock(&driver->diagchar_mutex);
+	data_type = driver->data_ready[index];
+	mutex_unlock(&driver->diagchar_mutex);
+	return data_type;
+}
 
 static ssize_t diagchar_read(struct file *file, char __user *buf, size_t count,
 			  loff_t *ppos)

@@ -1708,6 +1708,7 @@ static int fastrpc_file_free(struct fastrpc_file *fl)
 	kfree(fl);
 	return 0;
 }
+
 static int fastrpc_device_release(struct inode *inode, struct file *file)
 {
 	struct fastrpc_file *fl = (struct fastrpc_file *)file->private_data;
