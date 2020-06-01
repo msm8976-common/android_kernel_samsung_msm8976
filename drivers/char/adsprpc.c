@@ -931,7 +931,6 @@ static int get_args(uint32_t kernel, struct smq_invoke_ctx *ctx)
 					uint64_to_ptr(rpra[i].buf.pv
 						+ rpra[i].buf.len));
 		}
-
 	}
 	inh = inbufs + outbufs;
 	for (i = 0; rpra && lrpra && i < REMOTE_SCALARS_INHANDLES(sc); i++) {
@@ -1032,6 +1031,7 @@ static void inv_args(struct smq_invoke_ctx* ctx)
 	int i, inbufs, outbufs;
 	uint32_t sc = ctx->sc;
 	remote_arg64_t *rpra = ctx->lrpra;
+	int used = ctx->used;
 	int inv = 0;
 
 	inbufs = REMOTE_SCALARS_INBUFS(sc);
