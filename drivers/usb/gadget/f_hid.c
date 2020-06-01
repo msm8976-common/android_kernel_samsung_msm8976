@@ -181,12 +181,6 @@ static struct usb_descriptor_header *hidg_fs_descriptors[] = {
 	NULL,
 };
 
-void free_ep_req(struct usb_ep *ep, struct usb_request *req)
-{
-	kfree(req->buf);
-	usb_ep_free_request(ep, req);
-}
-
 /*-------------------------------------------------------------------------*/
 /*                              Char Device                                */
 
